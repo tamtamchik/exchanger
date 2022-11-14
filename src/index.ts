@@ -11,7 +11,7 @@ interface YFResponse {
   chart: { result: { meta: { regularMarketPrice: number } }[] }
 }
 
-export async function getExchangeRate (from: CurrencyCode, to: CurrencyCode): Promise<number | undefined> {
+export async function getExchangeRate (from: CurrencyCode, to: CurrencyCode): Promise<number> {
   let response
   try {
     const rateUrl = YF_BASE + from.toUpperCase() + to.toUpperCase() + YF_PARAMS
@@ -26,8 +26,10 @@ export async function getExchangeRate (from: CurrencyCode, to: CurrencyCode): Pr
 
   const result = await response.json() as YFResponse
   const rate = result.chart?.result[0]?.meta?.regularMarketPrice
+
   if (!rate) {
     throw new MalformedError('Service did not return correct data structure.')
   }
+
   return rate
 }
