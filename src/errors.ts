@@ -1,51 +1,30 @@
-export class FetchError extends Error {
-  constructor (msg: string) {
+abstract class CustomError extends Error {
+  protected constructor (name: string, msg: string) {
     super(msg)
 
     if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, FetchError)
+      Error.captureStackTrace(this, CustomError)
     }
 
-    this.name = 'FetchError'
+    this.name = name
     this.message = msg
   }
 }
 
-export class BackendError extends Error {
+export class FetchError extends CustomError {
   constructor (msg: string) {
-    super(msg)
-
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, BackendError)
-    }
-
-    this.name = 'BackendError'
-    this.message = msg
+    super('FetchError', msg)
   }
 }
 
-export class ConfigError extends Error {
+export class BackendError extends CustomError {
   constructor (msg: string) {
-    super(msg)
-
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, ConfigError)
-    }
-
-    this.name = 'ConfigError'
-    this.message = msg
+    super('BackendError', msg)
   }
 }
 
-export class MalformedError extends Error {
+export class MalformedError extends CustomError {
   constructor (msg: string) {
-    super(msg)
-
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, MalformedError)
-    }
-
-    this.name = 'MalformedError'
-    this.message = msg
+    super('MalformedError', msg)
   }
 }

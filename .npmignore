@@ -1,3 +1,25 @@
-.idea/*
+# Ignore the .idea directory
+.idea/
 
-fixup.sh
+# Ignore the CI directory
+.circleci/
+
+# Ignore the .git directory
+.git/
+
+# Ignore TypeScript source and test files
+src/
+test/
+
+# Ignore the coverage directory
+coverage/
+
+# Ignore any configuration files
+jest.config.js
+
+# Ignore node_modules
+node_modules/
+
+# Ignore all markdown files (keep only README)
+*.md
+!README.md

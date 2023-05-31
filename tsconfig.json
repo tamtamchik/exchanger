@@ -1,8 +1,11 @@
 {
-  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "module": "esnext",
-    "outDir": "dist/esm",
-    "target": "esnext"
-  }
+    "declaration": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "target": "es6",
+    "moduleResolution": "node"
+  },
+  "include": ["src", "test"],
+  "exclude": ["node_modules"]
 }
