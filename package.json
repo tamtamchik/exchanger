@@ -32,7 +32,7 @@
     "typescript": "5.0.4"
   },
   "dependencies": {
-    "node-fetch": "3.3.1"
+    "node-fetch": "3.3.2"
   },
   "exports": {
     ".": {
