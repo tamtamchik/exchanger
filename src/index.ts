@@ -1,5 +1,3 @@
-import fetch, { Response } from 'node-fetch'
-
 import { BackendError, FetchError, MalformedError } from './errors'
 
 export type CurrencyCode = string
