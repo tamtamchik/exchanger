@@ -1,6 +1,6 @@
 {
   "name": "@tamtamchik/exchanger",
-  "version": "1.1.0",
+  "version": "1.2.1",
   "description": "Simple and free npm library to get realtime currency exchange rates.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -27,12 +27,12 @@
     "currency converter rate"
   ],
   "devDependencies": {
-    "@types/node": "20.2.5",
-    "tsup": "6.7.0",
-    "typescript": "5.0.4"
+    "@types/node": "20.5.1",
+    "tsup": "7.2.0",
+    "typescript": "5.1.6"
   },
   "dependencies": {
-    "node-fetch": "3.3.1"
+    "node-fetch": "3.3.2"
   },
   "exports": {
     ".": {
