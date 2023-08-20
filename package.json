@@ -1,6 +1,6 @@
 {
   "name": "@tamtamchik/exchanger",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Simple and free npm library to get realtime currency exchange rates.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

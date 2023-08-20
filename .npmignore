@@ -8,7 +8,6 @@
 .git/
 
 # Ignore TypeScript source and test files
-src/
 test/
 
 # Ignore the coverage directory
