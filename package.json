@@ -1,6 +1,6 @@
 {
   "name": "@tamtamchik/exchanger",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "Simple and free npm library to get realtime currency exchange rates.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -49,6 +49,7 @@
     "dev": "npm run build -- --watch src",
     "prepublishOnly": "npm run build",
     "test": "jest",
+    "test:acceptance": "RUN_ACCEPTANCE_TESTS=true jest",
     "coverage": "jest --coverage"
   }
 }
