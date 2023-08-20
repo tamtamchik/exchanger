@@ -43,6 +43,21 @@ async function fetchRate () {
 fetchRate()
 ```
 
+## Caching
+
+To improve performance and reduce the number of requests made to the API, you can use the built-in caching feature. 
+By default, caching is **_disabled_**. You can enable and customize caching by passing an options object 
+to the `getExchangeRate` function:
+
+```javascript
+// Cache for 1 hour (3600000 milliseconds)
+const rate = await getExchangeRate('USD', 'EUR', { cacheDurationMs: 3600000 }) 
+```
+
+Once a rate is fetched, it's stored in an in-memory cache. 
+If you fetch the same rate within the specified caching duration, the cached rate is returned instead of 
+making a new API call.
+
 ## Error Handling
 
 This package defines the following error classes for better error handling:
