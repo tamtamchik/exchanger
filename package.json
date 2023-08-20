@@ -4,7 +4,7 @@
   "description": "Simple and free npm library to get realtime currency exchange rates.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "types": "./src/index.ts",
   "author": "Yuri Tkachenko <yuri.tam.tkachenko@gmail.com>",
   "license": "MIT",
   "homepage": "https://github.com/tamtamchik/exchanger#readme",
@@ -41,11 +41,11 @@
     ".": {
       "require": "./dist/index.js",
       "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
+      "types": "./src/index.ts"
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "build": "tsup src/index.ts --format cjs,esm --clean",
     "dev": "npm run build -- --watch src",
     "prepublishOnly": "npm run build",
     "test": "jest",
