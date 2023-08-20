@@ -49,7 +49,6 @@
     "dev": "npm run build -- --watch src",
     "prepublishOnly": "npm run build",
     "test": "jest",
-    "test:acceptance": "RUN_ACCEPTANCE_TESTS=true jest",
     "coverage": "jest --coverage"
   }
 }

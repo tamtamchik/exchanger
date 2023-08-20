@@ -1,8 +1,6 @@
 import { getExchangeRate } from '../src'
 
-const shouldRunAcceptanceTests = process.env.RUN_ACCEPTANCE_TESTS === 'true'
-const runOrSkip = shouldRunAcceptanceTests ? describe : describe.skip
-runOrSkip('getExchangeRate acceptance tests', () => {
+describe('getExchangeRate acceptance tests', () => {
 
   jest.setTimeout(30 * 1000)
 

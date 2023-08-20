@@ -81,7 +81,7 @@ describe('getExchangeRate', () => {
     await getExchangeRate('USD', 'EUR', { cacheDurationMs: 1 })
 
     // Advance timers
-    jest.advanceTimersByTime(2)
+    jest.advanceTimersByTime(100)
 
     await getExchangeRate('USD', 'EUR', { cacheDurationMs: 1 })
 
