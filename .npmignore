@@ -9,6 +9,7 @@
 
 # Ignore TypeScript source and test files
 src/
+test/
 
 # Ignore the coverage directory
 coverage/
@@ -18,6 +19,9 @@ jest.config.js
 
 # Ignore node_modules
 node_modules/
+
+# Ingore Scrutinizer configuration
+.scrutinizer.yml
 
 # Ignore all markdown files (keep only README)
 *.md
