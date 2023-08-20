@@ -44,3 +44,5 @@ export async function getExchangeRate (from: CurrencyCode, to: CurrencyCode): Pr
 
   return rate
 }
+
+export * from './errors'

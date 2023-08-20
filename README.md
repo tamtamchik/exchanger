@@ -8,11 +8,6 @@
 
 This package provides functionality to fetch the exchange rates of different currencies using Yahoo Finance APIs.
 
-## Features
-
-- Fetches exchange rates of different currencies using Yahoo Finance APIs.
-- Written in TypeScript for robust typing and error checking.
-
 ## Installation
 
 Using npm:
