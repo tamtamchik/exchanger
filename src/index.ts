@@ -40,22 +40,27 @@ function getCachedRate (from: CurrencyCode, to: CurrencyCode, cacheDurationMs?: 
   return (cacheDurationMs && cachedRate && isCacheValid(cachedRate, cacheDurationMs)) ? cachedRate.value : null
 }
 
+async function fetchResponse (rateUrl: string): Promise<Response> {
+  const response = await fetch(rateUrl)
+  if (!response.ok) {
+    throw new BackendError(`Service did not return HTTP 200 response. Status: ${response.status}`)
+  }
+  return response
+}
+
+function parseRateFromResponse (result: YFResponse): number {
+  const rate = result.chart?.result[0]?.meta?.regularMarketPrice
+  if (!rate) {
+    throw new MalformedError('Unexpected response structure. Missing "regularMarketPrice".')
+  }
+  return rate
+}
+
 async function fetchRate (rateUrl: string): Promise<number> {
-  let response: Response
-
   try {
-    response = await fetch(rateUrl)
-    if (!response.ok) {
-      throw new BackendError(`Service did not return HTTP 200 response. Status: ${response.status}`)
-    }
-
-    const result: YFResponse = await response.json()
-    const rate = result.chart?.result[0]?.meta?.regularMarketPrice
-    if (!rate) {
-      throw new MalformedError('Unexpected response structure. Missing "regularMarketPrice".')
-    }
-
-    return rate
+    const response = await fetchResponse(rateUrl)
+    const responseData: YFResponse = await response.json()
+    return parseRateFromResponse(responseData)
   } catch (error) {
     if (error instanceof BackendError || error instanceof MalformedError) {
       throw error
