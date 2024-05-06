@@ -27,12 +27,12 @@
     "currency converter rate"
   ],
   "devDependencies": {
-    "@types/jest": "29.5.3",
-    "@types/node": "20.5.1",
-    "jest": "29.6.2",
-    "ts-jest": "29.1.1",
-    "tsup": "7.2.0",
-    "typescript": "5.1.6"
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.12.8",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.5"
   },
   "engines": {
     "node": ">=18.0.0"
