@@ -29,66 +29,69 @@ yarn add @tamtamchik/exchanger
 Import Exchanger in your TypeScript file:
 
 ```typescript
-import { getExchangeRate } from '@tamtamchik/exchanger'
+import { getExchangeRate } from "@tamtamchik/exchanger";
 
-async function fetchRate () {
+async function fetchRate() {
   try {
-    const rate = await getExchangeRate('USD', 'EUR')
-    console.log(`Exchange rate from USD to EUR: ${rate}`)
+    const rate = await getExchangeRate("USD", "EUR");
+    console.log(`Exchange rate from USD to EUR: ${rate}`);
   } catch (error) {
-    console.error(`Failed to fetch the exchange rate: ${error.message}`)
+    console.error(`Failed to fetch the exchange rate: ${error.message}`);
   }
 }
 
-fetchRate()
+fetchRate();
 ```
 
 ## Caching
 
-To improve performance and reduce the number of requests made to the API, you can use the built-in caching feature. 
-By default, caching is **_disabled_**. You can enable and customize caching by passing an options object 
-to the `getExchangeRate` function:
+To improve performance and reduce the number of requests made to the API, you can use the built-in caching feature.
+By default, caching is **_disabled_**. You can enable and customize caching by passing an options object to the `getExchangeRate` function:
 
 ```javascript
 // Cache for 1 hour (3600000 milliseconds)
-const rate = await getExchangeRate('USD', 'EUR', { cacheDurationMs: 3600000 }) 
+const rate = await getExchangeRate("USD", "EUR", { cacheDurationMs: 3600000 });
 ```
 
-Once a rate is fetched, it's stored in an in-memory cache. 
-If you fetch the same rate within the specified caching duration, the cached rate is returned instead of 
-making a new API call.
+Once a rate is fetched, it's stored in an in-memory cache.
+If you fetch the same rate within the specified caching duration, the cached rate is returned instead ofmaking a new API call.
 
 ## Error Handling
 
 This package defines the following error classes for better error handling:
 
-- `FetchError`: Thrown when there is a network problem and the request cannot be made.
-- `BackendError`: Thrown when the service does not return a HTTP 200 response.
-- `MalformedError`: Thrown when the service does not return the expected data structure.
+- `NetworkError`: Thrown when there is a network problem and the request cannot be made.
+- `ServerError`: Thrown when the service does not return a HTTP 200 response.
+- `DataError`: Thrown when the service does not return the expected data structure.
 
 Each error class extends the built-in Error class, so you can use instanceof to check the error type.
 
 ```typescript
-import { BackendError, FetchError, getExchangeRate, MalformedError } from '@tamtamchik/exchanger'
+import {
+  ServerError,
+  NetworkError,
+  DataError,
+  getExchangeRate,
+} from "@tamtamchik/exchanger";
 
-async function fetchRate () {
+async function fetchRate() {
   try {
-    const rate = await getExchangeRate('USD', 'EUR')
-    console.log(`Exchange rate from USD to EUR: ${rate}`)
+    const rate = await getExchangeRate("USD", "EUR");
+    console.log(`Exchange rate from USD to EUR: ${rate}`);
   } catch (error) {
-    if (error instanceof FetchError) {
-      console.error('Network problem:', error.message)
-    } else if (error instanceof BackendError) {
-      console.error('Backend problem:', error.message)
-    } else if (error instanceof MalformedError) {
-      console.error('Unexpected response data:', error.message)
+    if (error instanceof NetworkError) {
+      console.error("Network problem:", error.message);
+    } else if (error instanceof ServerError) {
+      console.error("Backend problem:", error.message);
+    } else if (error instanceof DataError) {
+      console.error("Unexpected response data:", error.message);
     } else {
-      console.error('Unknown error:', error.message)
+      console.error("Unknown error:", error.message);
     }
   }
 }
 
-fetchRate()
+fetchRate();
 ```
 
 ## Contributing
@@ -106,7 +109,6 @@ Exchanger is [MIT licensed](./LICENSE).
 [ico-scrutinizer-build]: https://img.shields.io/scrutinizer/build/g/tamtamchik/exchanger/main.svg?style=flat-square
 [ico-scrutinizer-quality]: https://img.shields.io/scrutinizer/quality/g/tamtamchik/exchanger/main.svg?style=flat-square
 [ico-scrutinizer-coverage]: https://img.shields.io/scrutinizer/coverage/g/tamtamchik/exchanger/main.svg?style=flat-square
-
 [link-coffee]: https://www.buymeacoffee.com/tamtamchik
 [link-npm]: https://www.npmjs.com/package/@tamtamchik/exchanger
 [link-downloads]: https://www.npmjs.com/package/@tamtamchik/exchanger
