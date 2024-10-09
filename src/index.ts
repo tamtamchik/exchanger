@@ -1,15 +1,15 @@
-import { BackendError, FetchError, MalformedError } from './errors'
+import { DataError, NetworkError, ServerError } from "./errors";
 
-export type CurrencyCode = string;
-
-interface YFResponse {
+interface ExchangeRateResponse {
   chart: {
-    result: {
-      meta: {
-        regularMarketPrice: number
-      }
-    }[]
-  }
+    result: [
+      {
+        meta: {
+          regularMarketPrice: number;
+        };
+      },
+    ];
+  };
 }
 
 interface CachedRate {
@@ -18,77 +18,91 @@ interface CachedRate {
 }
 
 interface ExchangeRateOptions {
-  cacheDurationMs?: number; // Defaults to undefined (no caching)
+  cacheDurationMs?: number;
 }
 
-const YF_BASE = 'https://query1.finance.yahoo.com/v8/finance/chart/'
-const YF_PARAMS = '=X?region=US&lang=en-US&includePrePost=false&interval=2m&useYfid=true&range=1d&corsDomain=finance.yahoo.com&.tsrc=finance'
+const YAHOO_FINANCE_BASE_URL =
+  "https://query1.finance.yahoo.com/v8/finance/chart/";
+const YAHOO_FINANCE_QUERY_PARAMS =
+  "=X?region=US&lang=en-US&includePrePost=false&interval=2m&useYfid=true&range=1d&corsDomain=finance.yahoo.com&.tsrc=finance";
 
-const rateCache: Record<string, CachedRate> = {}
+const rateCache = new Map<string, CachedRate>();
 
-function getRateUrl (from: CurrencyCode, to: CurrencyCode): string {
-  return `${YF_BASE}${from.toUpperCase()}${to.toUpperCase()}${YF_PARAMS}`
+function buildRateUrl(fromCurrency: string, toCurrency: string): string {
+  return `${YAHOO_FINANCE_BASE_URL}${fromCurrency.toUpperCase()}${toCurrency.toUpperCase()}${YAHOO_FINANCE_QUERY_PARAMS}`;
 }
 
-function isCacheValid (cachedRate: CachedRate, cacheDurationMs: number): boolean {
-  return Date.now() - cachedRate.timestamp < cacheDurationMs
+function isCacheValid(
+  cachedRate: CachedRate,
+  cacheDurationMs: number,
+): boolean {
+  return Date.now() - cachedRate.timestamp < cacheDurationMs;
 }
 
-function getCachedRate (from: CurrencyCode, to: CurrencyCode, cacheDurationMs?: number): number | null {
-  const cacheKey = `${from}-${to}`
-  const cachedRate = rateCache[cacheKey]
-  return (cacheDurationMs && cachedRate && isCacheValid(cachedRate, cacheDurationMs)) ? cachedRate.value : null
+function getCachedRate(
+  fromCurrency: string,
+  toCurrency: string,
+  cacheDurationMs?: number,
+): number | null {
+  if (!cacheDurationMs) return null;
+  const cacheKey = `${fromCurrency}-${toCurrency}`;
+  const cachedRate = rateCache.get(cacheKey);
+  return cachedRate && isCacheValid(cachedRate, cacheDurationMs)
+    ? cachedRate.value
+    : null;
 }
 
-async function fetchResponse (rateUrl: string): Promise<Response> {
-  const response = await fetch(rateUrl)
+async function fetchExchangeRateResponse(rateUrl: string): Promise<Response> {
+  const response = await fetch(rateUrl);
   if (!response.ok) {
-    throw new BackendError(`Service did not return HTTP 200 response. Status: ${response.status}`)
+    throw new ServerError(`HTTP ${response.status}: ${response.statusText}`);
   }
-  return response
+  return response;
 }
 
-function parseRateFromResponse (result: YFResponse): number {
-  const rate = result.chart?.result[0]?.meta?.regularMarketPrice
-  if (!rate) {
-    throw new MalformedError('Unexpected response structure. Missing "regularMarketPrice".')
+function extractRateFromResponse(response: ExchangeRateResponse): number {
+  const rate = response.chart?.result[0]?.meta?.regularMarketPrice;
+  if (typeof rate !== "number" || isNaN(rate)) {
+    throw new DataError('Invalid or missing "regularMarketPrice" in response.');
   }
-  return rate
+  return rate;
 }
 
-async function fetchRate (rateUrl: string): Promise<number> {
+async function fetchExchangeRate(rateUrl: string): Promise<number> {
   try {
-    const response = await fetchResponse(rateUrl)
-    const responseData: YFResponse = await response.json()
-    return parseRateFromResponse(responseData)
+    const response = await fetchExchangeRateResponse(rateUrl);
+    const responseData: ExchangeRateResponse = await response.json();
+    return extractRateFromResponse(responseData);
   } catch (error) {
-    if (error instanceof BackendError || error instanceof MalformedError) {
-      throw error
+    if (error instanceof ServerError || error instanceof DataError) {
+      throw error;
     }
-    throw new FetchError(`Failed to fetch data from ${rateUrl}`)
+    throw new NetworkError(
+      `Failed to fetch exchange rate: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
 }
 
-export async function getExchangeRate (
-  from: CurrencyCode,
-  to: CurrencyCode,
-  options: ExchangeRateOptions = {}
+export async function getExchangeRate(
+  fromCurrency: string,
+  toCurrency: string,
+  options: ExchangeRateOptions = {},
 ): Promise<number> {
-  const cachedRate = getCachedRate(from, to, options.cacheDurationMs)
+  const { cacheDurationMs } = options;
+  const cachedRate = getCachedRate(fromCurrency, toCurrency, cacheDurationMs);
   if (cachedRate !== null) {
-    return cachedRate
+    return cachedRate;
   }
 
-  const rateUrl = getRateUrl(from, to)
-  const rate = await fetchRate(rateUrl)
+  const rateUrl = buildRateUrl(fromCurrency, toCurrency);
+  const rate = await fetchExchangeRate(rateUrl);
 
-  if (options.cacheDurationMs) {
-    const cacheKey = `${from}-${to}`
-    rateCache[cacheKey] = { value: rate, timestamp: Date.now() } // Cache the result with a timestamp
+  if (cacheDurationMs) {
+    const cacheKey = `${fromCurrency}-${toCurrency}`;
+    rateCache.set(cacheKey, { value: rate, timestamp: Date.now() });
   }
 
-  return rate
+  return rate;
 }
 
-
-export * from './errors'
+export * from "./errors";

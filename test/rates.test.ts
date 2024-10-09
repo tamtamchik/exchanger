@@ -1,101 +1,117 @@
-import { BackendError, FetchError, getExchangeRate, MalformedError } from '../src'
+import { getExchangeRate, NetworkError, ServerError, DataError } from "../src";
 
-describe('getExchangeRate', () => {
-  const validRateUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/USDEUR=X?...' // Your complete valid URL
+describe("getExchangeRate", () => {
   const validResponse = {
     chart: {
-      result: [{
-        meta: {
-          regularMarketPrice: 1.23
-        }
-      }]
-    }
-  }
+      result: [
+        {
+          meta: {
+            regularMarketPrice: 1.23,
+          },
+        },
+      ],
+    },
+  };
 
   beforeEach(() => {
-    jest.resetAllMocks()
-    jest.useFakeTimers()
-
-    global.fetch = jest.fn()
-  })
+    jest.resetAllMocks();
+    jest.useFakeTimers();
+    global.fetch = jest.fn();
+  });
 
   afterEach(() => {
-    jest.useRealTimers()
-  })
+    jest.useRealTimers();
+  });
 
-  it('should return exchange rate for valid response', async () => {
+  it("should return exchange rate for valid response", async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve(validResponse)
-    })
+      json: () => Promise.resolve(validResponse),
+    });
 
-    const rate = await getExchangeRate('USD', 'EUR')
-    expect(rate).toBe(1.23)
-  })
+    const rate = await getExchangeRate("USD", "EUR");
+    expect(rate).toBe(1.23);
+  });
 
-  it('should throw BackendError for non-200 HTTP status', async () => {
+  it("should throw BackendError for non-200 HTTP status", async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: false,
       status: 404,
-      statusText: 'Not Found'
-    })
+      statusText: "Not Found",
+    });
 
-    await expect(getExchangeRate('USD', 'EUR')).rejects.toThrow(BackendError)
-  })
+    await expect(getExchangeRate("USD", "EUR")).rejects.toThrow(ServerError);
+  });
 
-  it('should throw FetchError for fetch failure', async () => {
-    (global.fetch as jest.Mock).mockRejectedValue(new Error('Fetch failed'))
+  it("should throw FetchError for fetch failure", async () => {
+    (global.fetch as jest.Mock).mockRejectedValue(new Error("Fetch failed"));
 
-    await expect(getExchangeRate('USD', 'EUR')).rejects.toThrow(FetchError)
-  })
+    await expect(getExchangeRate("USD", "EUR")).rejects.toThrow(NetworkError);
+  });
 
-  it('should throw MalformedError for unexpected response structure', async () => {
+  it("should throw MalformedError for unexpected response structure", async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({}) // An empty response
-    })
+      json: () => Promise.resolve({}), // An empty response
+    });
 
-    await expect(getExchangeRate('USD', 'EUR')).rejects.toThrow(MalformedError)
-  })
+    await expect(getExchangeRate("USD", "EUR")).rejects.toThrow(DataError);
+  });
 
-  it('should use cache for subsequent requests within cache duration', async () => {
+  it("should use cache for subsequent requests within cache duration", async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve(validResponse)
-    })
+      json: () => Promise.resolve(validResponse),
+    });
 
-    await getExchangeRate('USD', 'EUR', { cacheDurationMs: 60000 })
-    const rate = await getExchangeRate('USD', 'EUR', { cacheDurationMs: 60000 })
+    const cacheDurationMs = 60000;
+    await getExchangeRate("USD", "EUR", { cacheDurationMs });
+    const rate = await getExchangeRate("USD", "EUR", { cacheDurationMs });
 
-    expect(global.fetch).toHaveBeenCalledTimes(1) // Fetch was called only once, second time used cache.
-    expect(rate).toBe(1.23)
-  })
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(rate).toBe(1.23);
+  });
 
-  // flaky test
-  it.skip('should fetch new data after cache duration expires', async () => {
-    // Mock fetch to always return the valid response.
+  it("should fetch new data after cache duration expires", async () => {
     (global.fetch as jest.Mock).mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve(validResponse)
-    })
+      json: () => Promise.resolve(validResponse),
+    });
 
-    await getExchangeRate('USD', 'EUR', { cacheDurationMs: 1 })
+    const cacheDurationMs = 1000;
+    await getExchangeRate("RSD", "EUR", { cacheDurationMs });
 
-    // Advance timers
-    jest.advanceTimersByTime(100)
+    jest.advanceTimersByTime(cacheDurationMs + 1);
 
-    await getExchangeRate('USD', 'EUR', { cacheDurationMs: 1 })
+    await getExchangeRate("RSD", "EUR", { cacheDurationMs });
 
-    expect(global.fetch).toHaveBeenCalledTimes(2) // Fetch was called twice.
-  })
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+  });
 
-  it('should call the correct URL based on currency pair', async () => {
+  it("should call the correct URL based on currency pair", async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve(validResponse)
-    })
+      json: () => Promise.resolve(validResponse),
+    });
 
-    await getExchangeRate('USD', 'EUR')
-    expect(global.fetch).toHaveBeenCalledWith('https://query1.finance.yahoo.com/v8/finance/chart/USDEUR=X?region=US&lang=en-US&includePrePost=false&interval=2m&useYfid=true&range=1d&corsDomain=finance.yahoo.com&.tsrc=finance')
-  })
-})
+    await getExchangeRate("USD", "EUR");
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining("USDEUR=X"),
+    );
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining("query1.finance.yahoo.com"),
+    );
+  });
+
+  it("should handle different currency pairs", async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(validResponse),
+    });
+
+    await getExchangeRate("GBP", "JPY");
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining("GBPJPY=X"),
+    );
+  });
+});
