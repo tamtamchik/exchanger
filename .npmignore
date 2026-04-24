@@ -2,7 +2,7 @@
 .idea/
 
 # Ignore the CI directory
-.circleci/
+.github/
 
 # Ignore the .git directory
 .git/
@@ -14,7 +14,7 @@ test/
 coverage/
 
 # Ignore any configuration files
-jest.config.js
+eslint.config.mjs
 
 # Ignore node_modules
 node_modules/
