@@ -1,64 +1,91 @@
+import { describe, it, afterEach, mock } from "node:test";
+import assert from "node:assert/strict";
 import { getExchangeRate, NetworkError, ServerError } from "../src";
 
 describe("getExchangeRate acceptance tests", () => {
-  jest.setTimeout(30 * 1000);
-
-  it("should return a valid exchange rate for USD to EUR", async () => {
-    const rate = await getExchangeRate("USD", "EUR");
-    expect(rate).toBeGreaterThan(0);
-    expect(rate).toBeLessThan(2); // Assuming 1 USD is unlikely to be worth more than 2 EUR
-    console.log(`1 USD = ${rate} EUR`);
+  afterEach(() => {
+    mock.restoreAll();
   });
 
-  it("should handle requests for multiple currency pairs", async () => {
-    const currencyPairs = [
-      { from: "USD", to: "EUR" },
-      { from: "USD", to: "GBP" },
-      { from: "USD", to: "JPY" },
-      { from: "EUR", to: "GBP" },
-    ];
+  it(
+    "should return a valid exchange rate for USD to EUR",
+    { timeout: 30000 },
+    async () => {
+      const rate = await getExchangeRate("USD", "EUR");
+      assert.ok(rate > 0);
+      assert.ok(rate < 2);
+      console.log(`1 USD = ${rate} EUR`);
+    },
+  );
 
-    const rates = await Promise.all(
-      currencyPairs.map((pair) => getExchangeRate(pair.from, pair.to)),
-    );
+  it(
+    "should handle requests for multiple currency pairs",
+    { timeout: 30000 },
+    async () => {
+      const currencyPairs = [
+        { from: "USD", to: "EUR" },
+        { from: "USD", to: "GBP" },
+        { from: "USD", to: "JPY" },
+        { from: "EUR", to: "GBP" },
+      ];
 
-    rates.forEach((rate, index) => {
-      const { from, to } = currencyPairs[index];
-      expect(rate).toBeGreaterThan(0);
-      console.log(`1 ${from} = ${rate} ${to}`);
-    });
-  });
+      const rates = await Promise.all(
+        currencyPairs.map((pair) => getExchangeRate(pair.from, pair.to)),
+      );
 
-  it("should throw a BackendError for unknown currency codes", async () => {
-    await expect(getExchangeRate("USD", "ZZZ")).rejects.toThrow(ServerError);
-  });
+      rates.forEach((rate, index) => {
+        const { from, to } = currencyPairs[index];
+        assert.ok(rate > 0);
+        console.log(`1 ${from} = ${rate} ${to}`);
+      });
+    },
+  );
 
-  it("should use cache for repeated requests within cache duration", async () => {
-    const cacheDurationMs = 5000;
-    const start = Date.now();
+  it(
+    "should throw a ServerError for unknown currency codes",
+    { timeout: 30000 },
+    async () => {
+      await assert.rejects(() => getExchangeRate("USD", "ZZZ"), ServerError);
+    },
+  );
 
-    const rate1 = await getExchangeRate("USD", "EUR", { cacheDurationMs });
-    const rate2 = await getExchangeRate("USD", "EUR", { cacheDurationMs });
+  it(
+    "should use cache for repeated requests within cache duration",
+    { timeout: 30000 },
+    async () => {
+      const cacheDurationMs = 5000;
+      const start = Date.now();
 
-    expect(rate1).toBe(rate2);
-    expect(Date.now() - start).toBeLessThan(cacheDurationMs);
-  });
+      const rate1 = await getExchangeRate("USD", "EUR", { cacheDurationMs });
+      const rate2 = await getExchangeRate("USD", "EUR", { cacheDurationMs });
 
-  it("should throw a NetworkError when network is unavailable", async () => {
-    jest.spyOn(global, "fetch").mockRejectedValue(new Error("Network failure"));
+      assert.strictEqual(rate1, rate2);
+      assert.ok(Date.now() - start < cacheDurationMs);
+    },
+  );
 
-    await expect(getExchangeRate("USD", "EUR")).rejects.toThrow(NetworkError);
+  it(
+    "should throw a NetworkError when network is unavailable",
+    { timeout: 30000 },
+    async () => {
+      mock.method(globalThis, "fetch", () =>
+        Promise.reject(new Error("Network failure")),
+      );
 
-    await expect(getExchangeRate("USD", "EUR")).rejects.toThrow(
-      "Failed to fetch exchange rate: Network failure",
-    );
+      await assert.rejects(() => getExchangeRate("USD", "EUR"), NetworkError);
 
-    jest.spyOn(global, "fetch").mockRejectedValue("Error");
+      await assert.rejects(() => getExchangeRate("USD", "EUR"), {
+        message: "Failed to fetch exchange rate: Network failure",
+      });
 
-    await expect(getExchangeRate("USD", "EUR")).rejects.toThrow(
-      "Failed to fetch exchange rate: Error",
-    );
+      mock.restoreAll();
+      mock.method(globalThis, "fetch", () => Promise.reject("Error"));
 
-    jest.restoreAllMocks();
-  });
+      await assert.rejects(() => getExchangeRate("USD", "EUR"), {
+        message: "Failed to fetch exchange rate: Error",
+      });
+
+      mock.restoreAll();
+    },
+  );
 });
