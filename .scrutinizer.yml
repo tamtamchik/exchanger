@@ -3,6 +3,8 @@ build:
 
   environment:
     node: 24
+    variables:
+      NVM_NODEJS_ORG_MIRROR: https://nodejs.org/dist
 
   nodes:
     coverage:
