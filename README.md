@@ -52,32 +52,6 @@ const rate = await getExchangeRate("USD", "EUR");
 console.log(`1 USD = ${rate} EUR`);
 ```
 
-## Development Setup
-
-Prerequisite: Node.js 20+ and npm.
-
-Install dependencies:
-
-```shell
-npm ci
-```
-
-Run the checks used in CI:
-
-```shell
-npm run format:check
-npm run lint
-npm run build
-npm test
-```
-
-Useful focused commands:
-
-```shell
-npm run dev      # Rebuild when source files change.
-npm run coverage # Run tests and generate coverage reports.
-```
-
 ## Usage
 
 Pass the source and target currency codes to `getExchangeRate`. It returns a
@@ -150,6 +124,32 @@ try {
     console.error("Unknown error:", error);
   }
 }
+```
+
+## Development Setup
+
+Prerequisite: Node.js 20+ and npm.
+
+Install dependencies:
+
+```shell
+npm ci
+```
+
+Run the checks used in CI:
+
+```shell
+npm run format:check
+npm run lint
+npm run build
+npm test
+```
+
+Useful focused commands:
+
+```shell
+npm run dev      # Rebuild when source files change.
+npm run coverage # Run tests and generate coverage reports.
 ```
 
 ## Documentation
