@@ -15,6 +15,7 @@ coverage/
 
 # Ignore any configuration files
 biome.json
+tsdown.config.mts
 .nvmrc
 
 # Ignore node_modules
