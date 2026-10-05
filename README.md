@@ -1,115 +1,186 @@
-# Exchanger
+<p align="center">
+  <img src="docs/assets/exchanger-readme-banner.png" alt="Exchanger" width="100%">
+</p>
 
-[![Buy Me A Coffee][ico-coffee]][link-coffee]
-[![Latest Version on NPM][ico-version]][link-npm]
-[![Scrutinizer build][ico-scrutinizer-build]][link-scrutinizer]
-[![Scrutinizer quality][ico-scrutinizer-quality]][link-scrutinizer]
-[![Scrutinizer coverage][ico-scrutinizer-coverage]][link-scrutinizer]
-[![Software License][ico-license]](LICENSE)
-[![Total Downloads][ico-downloads]][link-downloads]
+<p align="center">
+  <strong>Currency exchange rates from Yahoo Finance for JavaScript and TypeScript.</strong>
+</p>
 
-This package provides functionality to fetch the exchange rates of different currencies using Yahoo Finance APIs.
+<p align="center">
+  <a href="https://nodejs.org/"><img alt="Node.js 20+" src="https://img.shields.io/badge/Node.js-20%2B-339933?style=flat-square&logo=nodedotjs&logoColor=white"></a>
+  <a href="https://www.npmjs.com/package/@tamtamchik/exchanger"><img alt="Latest version on npm" src="https://img.shields.io/npm/v/@tamtamchik/exchanger?style=flat-square&logo=npm&logoColor=white"></a>
+  <a href="https://www.npmjs.com/package/@tamtamchik/exchanger"><img alt="Total downloads" src="https://img.shields.io/npm/dt/@tamtamchik/exchanger?style=flat-square"></a>
+  <a href="https://github.com/tamtamchik/exchanger/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/tamtamchik/exchanger/ci.yml?branch=main&style=flat-square&label=CI"></a>
+  <a href="https://scrutinizer-ci.com/g/tamtamchik/exchanger/"><img alt="Scrutinizer build" src="https://img.shields.io/scrutinizer/build/g/tamtamchik/exchanger/main?style=flat-square"></a>
+  <a href="https://scrutinizer-ci.com/g/tamtamchik/exchanger/"><img alt="Scrutinizer quality" src="https://img.shields.io/scrutinizer/quality/g/tamtamchik/exchanger/main?style=flat-square"></a>
+  <a href="https://scrutinizer-ci.com/g/tamtamchik/exchanger/"><img alt="Code coverage" src="https://img.shields.io/scrutinizer/coverage/g/tamtamchik/exchanger/main?style=flat-square"></a>
+  <a href="LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/license-MIT-22c55e?style=flat-square"></a>
+</p>
 
-## Installation
+<p align="center">
+  <a href="#quick-start">Quick Start</a> ·
+  <a href="#usage">Usage</a> ·
+  <a href="#development-setup">Development Setup</a> ·
+  <a href="#documentation">Documentation</a> ·
+  <a href="#security-notes">Security Notes</a>
+</p>
 
-Using npm:
+Exchanger fetches currency exchange rates from Yahoo Finance without an API key.
+It supports ES modules and CommonJS, includes TypeScript types, and provides optional
+in-memory caching and typed errors. Node.js 20 or later is required.
+
+## Quick Start
+
+Install with npm:
 
 ```shell
 npm install @tamtamchik/exchanger
 ```
 
-Using yarn:
+Or with yarn:
 
 ```shell
 yarn add @tamtamchik/exchanger
 ```
 
-## Usage
-
-Import Exchanger in your TypeScript file:
+Fetch a rate:
 
 ```typescript
 import { getExchangeRate } from "@tamtamchik/exchanger";
 
-async function fetchRate() {
-  try {
-    const rate = await getExchangeRate("USD", "EUR");
-    console.log(`Exchange rate from USD to EUR: ${rate}`);
-  } catch (error) {
-    console.error(`Failed to fetch the exchange rate: ${error.message}`);
-  }
-}
-
-fetchRate();
+const rate = await getExchangeRate("USD", "EUR");
+console.log(`1 USD = ${rate} EUR`);
 ```
 
-## Caching
+## Usage
 
-To improve performance and reduce the number of requests made to the API, you can use the built-in caching feature.
-By default, caching is **_disabled_**. You can enable and customize caching by passing an options object to the `getExchangeRate` function:
+Pass the source and target currency codes to `getExchangeRate`. It returns a
+`Promise<number>` containing the rate for the pair. The Yahoo Finance request uses
+uppercase currency codes.
+
+### ES Modules
+
+```typescript
+import { getExchangeRate } from "@tamtamchik/exchanger";
+
+const rate = await getExchangeRate("USD", "EUR");
+console.log(`1 USD = ${rate} EUR`);
+```
+
+### CommonJS
 
 ```javascript
-// Cache for 1 hour (3600000 milliseconds)
-const rate = await getExchangeRate("USD", "EUR", { cacheDurationMs: 3600000 });
+const { getExchangeRate } = require("@tamtamchik/exchanger");
+
+getExchangeRate("USD", "EUR")
+  .then((rate) => console.log(`1 USD = ${rate} EUR`))
+  .catch((error) => console.error(error));
 ```
 
-Once a rate is fetched, it's stored in an in-memory cache.
-If you fetch the same rate within the specified caching duration, the cached rate is returned instead ofmaking a new API call.
+### Caching
 
-## Error Handling
+Caching is disabled by default. Set `cacheDurationMs` to reuse a fetched rate for
+the same currency pair:
 
-This package defines the following error classes for better error handling:
+```typescript
+const rate = await getExchangeRate("USD", "EUR", {
+  cacheDurationMs: 3_600_000, // One hour, in milliseconds.
+});
+```
 
-- `NetworkError`: Thrown when there is a network problem and the request cannot be made.
-- `ServerError`: Thrown when the service does not return a HTTP 200 response.
-- `DataError`: Thrown when the service does not return the expected data structure.
+The cache lives in memory and is lost when the process exits. Calls must enable
+caching to read cached rates. Use consistent letter case for currency codes;
+cache keys preserve the case you pass.
 
-Each error class extends the built-in Error class, so you can use instanceof to check the error type.
+### Error Handling
+
+Exchanger exports three error classes, each extending `Error`:
+
+| Error          | Cause                                                              |
+| -------------- | ------------------------------------------------------------------ |
+| `NetworkError` | The request fails or the response cannot be parsed as JSON.        |
+| `ServerError`  | Yahoo Finance returns an unsuccessful HTTP status.                 |
+| `DataError`    | The parsed response has a missing or invalid `regularMarketPrice`. |
 
 ```typescript
 import {
-  ServerError,
-  NetworkError,
   DataError,
+  NetworkError,
+  ServerError,
   getExchangeRate,
 } from "@tamtamchik/exchanger";
 
-async function fetchRate() {
-  try {
-    const rate = await getExchangeRate("USD", "EUR");
-    console.log(`Exchange rate from USD to EUR: ${rate}`);
-  } catch (error) {
-    if (error instanceof NetworkError) {
-      console.error("Network problem:", error.message);
-    } else if (error instanceof ServerError) {
-      console.error("Backend problem:", error.message);
-    } else if (error instanceof DataError) {
-      console.error("Unexpected response data:", error.message);
-    } else {
-      console.error("Unknown error:", error.message);
-    }
+try {
+  const rate = await getExchangeRate("USD", "EUR");
+  console.log(`1 USD = ${rate} EUR`);
+} catch (error) {
+  if (error instanceof NetworkError) {
+    console.error("Network or JSON parsing problem:", error.message);
+  } else if (error instanceof ServerError) {
+    console.error("Yahoo Finance HTTP error:", error.message);
+  } else if (error instanceof DataError) {
+    console.error("Unexpected response data:", error.message);
+  } else {
+    console.error("Unknown error:", error);
   }
 }
-
-fetchRate();
 ```
+
+## Development Setup
+
+Prerequisite: Node.js 20+ and npm.
+
+Install dependencies:
+
+```shell
+npm ci
+```
+
+Run the checks used in CI:
+
+```shell
+npm run format:check
+npm run lint
+npm run build
+npm test
+```
+
+Useful focused commands:
+
+```shell
+npm run dev      # Rebuild when source files change.
+npm run coverage # Run tests and generate coverage reports.
+```
+
+## Documentation
+
+- [npm package](https://www.npmjs.com/package/@tamtamchik/exchanger): published versions and installation details.
+- [Source](src/index.ts): exchange-rate requests and cache behavior.
+- [Tests](test/): rate retrieval, caching, errors, and package acceptance checks.
+- [Security policy](SECURITY.md): vulnerability reporting.
+- [CI](https://github.com/tamtamchik/exchanger/actions/workflows/ci.yml): formatting, lint, build, and test results.
+
+## Security Notes
+
+Rates depend on Yahoo Finance availability and data. Exchanger returns a numeric
+rate; it does not execute currency exchanges.
+
+Report vulnerabilities through [GitHub's private vulnerability reporting](https://github.com/tamtamchik/exchanger/security/advisories/new).
+See [SECURITY.md](SECURITY.md) for the reporting policy.
 
 ## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+Pull requests are welcome. For major changes, [open an issue](https://github.com/tamtamchik/exchanger/issues)
+first to discuss the proposal.
+
+## Support
+
+If you find Exchanger useful, you can [buy me a coffee](https://www.buymeacoffee.com/tamtamchik).
+
+<p>
+  <a href="https://www.buymeacoffee.com/tamtamchik"><img alt="Buy me a coffee" src="https://img.shields.io/badge/Buy%20Me%20A-Coffee-6F4E37?style=flat-square&logo=buymeacoffee&logoColor=white"></a>
+</p>
 
 ## License
 
-Exchanger is [MIT licensed](./LICENSE).
-
-[ico-coffee]: https://img.shields.io/badge/Buy%20Me%20A-Coffee-%236F4E37.svg?style=flat-square
-[ico-version]: https://img.shields.io/npm/v/@tamtamchik/exchanger.svg?style=flat-square
-[ico-license]: https://img.shields.io/npm/l/@tamtamchik/exchanger.svg?style=flat-square
-[ico-downloads]: https://img.shields.io/npm/dt/@tamtamchik/exchanger.svg?style=flat-square
-[ico-scrutinizer-build]: https://img.shields.io/scrutinizer/build/g/tamtamchik/exchanger/main.svg?style=flat-square
-[ico-scrutinizer-quality]: https://img.shields.io/scrutinizer/quality/g/tamtamchik/exchanger/main.svg?style=flat-square
-[ico-scrutinizer-coverage]: https://img.shields.io/scrutinizer/coverage/g/tamtamchik/exchanger/main.svg?style=flat-square
-[link-coffee]: https://www.buymeacoffee.com/tamtamchik
-[link-npm]: https://www.npmjs.com/package/@tamtamchik/exchanger
-[link-downloads]: https://www.npmjs.com/package/@tamtamchik/exchanger
-[link-scrutinizer]: https://scrutinizer-ci.com/g/tamtamchik/exchanger/
+[MIT](LICENSE).
