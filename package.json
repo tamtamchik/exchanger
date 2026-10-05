@@ -1,6 +1,6 @@
 {
   "name": "@tamtamchik/exchanger",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Simple and free npm library to get realtime currency exchange rates.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -39,19 +39,19 @@
   "devEngines": {
     "runtime": {
       "name": "node",
-      "version": ">=24.0.0"
+      "version": ">=24.11.0"
     }
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
     "@types/node": "^26.4.0",
     "c8": "^12.0.0",
-    "tsup": "^8.3.0",
+    "tsdown": "^0.23.0",
     "tsx": "^4.23.12",
     "typescript": "^7.0.2"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --clean",
+    "build": "tsdown",
     "dev": "npm run build -- --watch src",
     "prepublishOnly": "npm run build",
     "test": "node --import tsx --test test/*.test.ts",
