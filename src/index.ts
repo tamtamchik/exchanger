@@ -62,7 +62,7 @@ async function fetchExchangeRateResponse(rateUrl: string): Promise<Response> {
 
 function extractRateFromResponse(response: ExchangeRateResponse): number {
   const rate = response.chart?.result[0]?.meta?.regularMarketPrice;
-  if (typeof rate !== "number" || isNaN(rate)) {
+  if (typeof rate !== "number" || Number.isNaN(rate)) {
     throw new DataError('Invalid or missing "regularMarketPrice" in response.');
   }
   return rate;

@@ -2,14 +2,15 @@ build:
   image: default-jammy
 
   environment:
-    node: 22
+    node: 24
+    variables:
+      NVM_NODEJS_ORG_MIRROR: https://nodejs.org/dist
 
   nodes:
     coverage:
       tests:
         override:
           - npm ci
-          - npm test
           - js-scrutinizer-run
           - command: npm run coverage
             coverage:

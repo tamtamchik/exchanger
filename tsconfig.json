@@ -4,8 +4,10 @@
     "esModuleInterop": true,
     "strict": true,
     "target": "esnext",
-    "moduleResolution": "node",
-    "lib": ["esnext", "dom"]
+    "moduleResolution": "bundler",
+    "lib": ["esnext", "dom"],
+    "module": "esnext",
+    "types": ["node"]
   },
   "include": ["src", "test"],
   "exclude": ["node_modules"]

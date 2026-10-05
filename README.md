@@ -128,7 +128,9 @@ try {
 
 ## Development Setup
 
-Prerequisite: Node.js 20+ and npm.
+Prerequisite: Node.js 24 LTS or later and its bundled npm. CI tests Node.js 24 and 26.
+The `.nvmrc` file selects Node.js 24; npm enforces the development runtime through
+`devEngines`. The published library retains its Node.js 20+ runtime requirement.
 
 Install dependencies:
 
@@ -139,17 +141,21 @@ npm ci
 Run the checks used in CI:
 
 ```shell
-npm run format:check
-npm run lint
+npm run check
 npm run build
 npm test
 ```
 
+Biome checks and formats TypeScript and JSON files. Markdown and YAML files are
+not formatted by these commands. Coverage uses unit tests; `npm test` also runs
+acceptance tests against Yahoo Finance.
+
 Useful focused commands:
 
 ```shell
+npm run fix      # Format, organize imports, and apply safe lint fixes.
 npm run dev      # Rebuild when source files change.
-npm run coverage # Run tests and generate coverage reports.
+npm run coverage # Run unit tests and generate coverage reports.
 ```
 
 ## Documentation
@@ -174,8 +180,6 @@ Pull requests are welcome. For major changes, [open an issue](https://github.com
 first to discuss the proposal.
 
 ## Support
-
-If you find Exchanger useful, you can [buy me a coffee](https://www.buymeacoffee.com/tamtamchik).
 
 <p>
   <a href="https://www.buymeacoffee.com/tamtamchik"><img alt="Buy me a coffee" src="https://img.shields.io/badge/Buy%20Me%20A-Coffee-6F4E37?style=flat-square&logo=buymeacoffee&logoColor=white"></a>
