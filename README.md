@@ -147,14 +147,15 @@ npm test
 ```
 
 Biome checks and formats TypeScript and JSON files. Markdown and YAML files are
-not formatted by these commands.
+not formatted by these commands. Coverage uses unit tests; `npm test` also runs
+acceptance tests against Yahoo Finance.
 
 Useful focused commands:
 
 ```shell
 npm run fix      # Format, organize imports, and apply safe lint fixes.
 npm run dev      # Rebuild when source files change.
-npm run coverage # Run tests and generate coverage reports.
+npm run coverage # Run unit tests and generate coverage reports.
 ```
 
 ## Documentation

@@ -55,7 +55,7 @@
     "dev": "npm run build -- --watch src",
     "prepublishOnly": "npm run build",
     "test": "node --import tsx --test test/*.test.ts",
-    "coverage": "c8 --reporter=text --reporter=lcov node --import tsx --test test/*.test.ts",
+    "coverage": "c8 --reporter=text --reporter=lcov node --import tsx --test test/rates.test.ts",
     "check": "biome ci .",
     "fix": "biome check --write ."
   }
