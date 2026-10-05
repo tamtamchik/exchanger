@@ -128,7 +128,9 @@ try {
 
 ## Development Setup
 
-Prerequisite: Node.js 20+ and npm.
+Prerequisite: Node.js 24 LTS or later and its bundled npm. CI tests Node.js 24 and 26.
+The `.nvmrc` file selects Node.js 24; npm enforces the development runtime through
+`devEngines`. The published library retains its Node.js 20+ runtime requirement.
 
 Install dependencies:
 
