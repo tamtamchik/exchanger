@@ -150,8 +150,7 @@ not formatted by these commands.
 Useful focused commands:
 
 ```shell
-npm run format   # Format supported files with Biome.
-npm run lint:fix  # Apply safe lint fixes.
+npm run fix      # Format, organize imports, and apply safe lint fixes.
 npm run dev      # Rebuild when source files change.
 npm run coverage # Run tests and generate coverage reports.
 ```

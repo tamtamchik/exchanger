@@ -50,10 +50,7 @@
     "prepublishOnly": "npm run build",
     "test": "node --import tsx --test test/*.test.ts",
     "coverage": "c8 --reporter=text --reporter=lcov node --import tsx --test test/*.test.ts",
-    "format": "biome format --write .",
-    "format:check": "biome format .",
-    "lint": "biome lint .",
-    "lint:fix": "biome lint --write .",
-    "check": "biome ci ."
+    "check": "biome ci .",
+    "fix": "biome check --write ."
   }
 }
