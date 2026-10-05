@@ -181,8 +181,6 @@ first to discuss the proposal.
 
 ## Support
 
-If you find Exchanger useful, you can [buy me a coffee](https://www.buymeacoffee.com/tamtamchik).
-
 <p>
   <a href="https://www.buymeacoffee.com/tamtamchik"><img alt="Buy me a coffee" src="https://img.shields.io/badge/Buy%20Me%20A-Coffee-6F4E37?style=flat-square&logo=buymeacoffee&logoColor=white"></a>
 </p>
