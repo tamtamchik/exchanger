@@ -139,15 +139,19 @@ npm ci
 Run the checks used in CI:
 
 ```shell
-npm run format:check
-npm run lint
+npm run check
 npm run build
 npm test
 ```
 
+Biome checks and formats TypeScript and JSON files. Markdown and YAML files are
+not formatted by these commands.
+
 Useful focused commands:
 
 ```shell
+npm run format   # Format supported files with Biome.
+npm run lint:fix  # Apply safe lint fixes.
 npm run dev      # Rebuild when source files change.
 npm run coverage # Run tests and generate coverage reports.
 ```

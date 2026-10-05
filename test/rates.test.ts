@@ -1,6 +1,6 @@
-import { describe, it, afterEach, mock } from "node:test";
 import assert from "node:assert/strict";
-import { getExchangeRate, NetworkError, ServerError, DataError } from "../src";
+import { afterEach, describe, it, mock } from "node:test";
+import { DataError, getExchangeRate, NetworkError, ServerError } from "../src";
 
 describe("getExchangeRate", () => {
   const validResponse = {

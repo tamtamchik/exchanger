@@ -14,7 +14,7 @@ test/
 coverage/
 
 # Ignore any configuration files
-eslint.config.mjs
+biome.json
 
 # Ignore node_modules
 node_modules/
