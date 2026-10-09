@@ -7,8 +7,7 @@
 </p>
 
 <p align="center">
-  <a href="https://nodejs.org/"><img alt="Node.js 20+" src="https://img.shields.io/badge/Node.js-20%2B-339933?style=flat-square&logo=nodedotjs&logoColor=white"></a>
-  <a href="https://www.npmjs.com/package/@tamtamchik/exchanger"><img alt="Latest version on npm" src="https://img.shields.io/npm/v/@tamtamchik/exchanger?style=flat-square&logo=npm&logoColor=white"></a>
+  <a href="https://www.npmjs.com/package/@tamtamchik/exchanger"><img alt="Latest version on npm" src="https://img.shields.io/npm/v/@tamtamchik/exchanger?style=flat-square"></a>
   <a href="https://www.npmjs.com/package/@tamtamchik/exchanger"><img alt="Total downloads" src="https://img.shields.io/npm/dt/@tamtamchik/exchanger?style=flat-square"></a>
   <a href="https://github.com/tamtamchik/exchanger/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/tamtamchik/exchanger/ci.yml?branch=main&style=flat-square&label=CI"></a>
   <a href="https://scrutinizer-ci.com/g/tamtamchik/exchanger/"><img alt="Scrutinizer build" src="https://img.shields.io/scrutinizer/build/g/tamtamchik/exchanger/main?style=flat-square"></a>
