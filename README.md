@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/exchanger-readme-banner.png" alt="Exchanger" width="100%">
+  <img src="docs/assets/exchanger-readme-banner.webp" alt="Exchanger" width="100%">
 </p>
 
 <p align="center">
